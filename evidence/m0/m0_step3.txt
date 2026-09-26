@@ -1,0 +1,22 @@
+=== COMMANDS ===
+curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  "https://us-east1-aiplatform.googleapis.com/v1beta1/projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/reasoningEngines"
+gcloud run services list --project qwiklabs-gcp-02-3d9077abaaf1 --format="table(metadata.name,status.url)"
+
+=== OUTPUTS ===
+[Command: Managed Runtime Reasoning Engines (us-east1)]
+Price Match Agent | projects/283235220070/locations/us-east1/reasoningEngines/2003176045389283328
+Customer Personalization Agent | projects/283235220070/locations/us-east1/reasoningEngines/3356507733414117376
+Markdown Strategy Agent | projects/283235220070/locations/us-east1/reasoningEngines/352606781957996544
+
+[Command: Cloud Run Services (us-east1 / europe-west3)]
+NAME                    URL
+novasmart-mcp           https://novasmart-mcp-c5julvtrbq-ue.a.run.app
+novasmart-store-portal  https://novasmart-store-portal-c5julvtrbq-ue.a.run.app
+promo-agent-shadow      https://promo-agent-shadow-c5julvtrbq-ue.a.run.app
+remote-browser-vm1      https://remote-browser-vm1-c5julvtrbq-ey.a.run.app
+
+[Runtime vs Catalog Diff]
+Catalogued & Deployed: Price Match Agent, customer-personalization-agent, markdown-strategy-agent
+Deployed but Uncatalogued (Shadow IT): promo-agent-shadow
+Infrastructure (non-agent): novasmart-mcp, novasmart-store-portal, remote-browser-vm1

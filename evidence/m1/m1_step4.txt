@@ -1,0 +1,62 @@
+=== READ-ONLY AUDIT VERIFICATION FOR MISSION 1 ===
+Execution Timestamp: 2026-09-26T11:44:00Z
+
+--- CHECK 1: Shadow Agent Registration ---
+Command: gcloud agent-registry services describe promo-agent-shadow --location=us-east1 --format="yaml(name, displayName)"
+Output:
+displayName: Promo Agent (Shadow)
+name: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/services/promo-agent-shadow
+Result: PASS
+
+--- CHECK 2: Dedicated Service Account ---
+Command: gcloud run services describe promo-agent-shadow --region=us-east1 --format="value(spec.template.spec.serviceAccountName)"
+Output:
+promo-agent-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com
+Result: PASS
+
+--- CHECK 3: Agent Identity Splitting ---
+Command: curl -s -H "Authorization: Bearer $TOKEN" "https://us-east1-aiplatform.googleapis.com/v1beta1/projects/283235220070/locations/us-east1/reasoningEngines/3356507733414117376" | jq '{identityType: .spec.identityType, effectiveIdentity: .spec.effectiveIdentity}'
+Output:
+{
+  "identityType": "AGENT_IDENTITY",
+  "effectiveIdentity": "agents.global.org-616463121992.system.id.goog/resources/aiplatform/projects/283235220070/locations/us-east1/reasoningEngines/3356507733414117376"
+}
+Result: PASS
+
+--- CHECK 4A: Project IAM Policy (Right-Sized Account Roles) ---
+Command: gcloud projects get-iam-policy qwiklabs-gcp-02-3d9077abaaf1 --flatten="bindings[].members" --format="table(bindings.role)" --filter="bindings.members:novasmart-customer-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com"
+Output:
+ROLE
+roles/aiplatform.user
+roles/bigquery.jobUser
+roles/logging.logWriter
+roles/run.invoker
+roles/storage.objectViewer
+roles/telemetry.writer
+(roles/bigquery.admin REMOVED)
+Result: PASS
+
+--- CHECK 4B: BigQuery Dataset ACL (Scoped Access) ---
+Command: bq show --format=prettyjson customer_data | jq '.access[] | select(.iamMember != null)'
+Output:
+{
+  "iamMember": "principal://agents.global.org-616463121992.system.id.goog/resources/aiplatform/projects/283235220070/locations/us-east1/reasoningEngines/3356507733414117376",
+  "role": "READER"
+}
+Result: PASS
+
+--- CHECK 5: Audit Log Attribution ---
+Command: gcloud logging read 'logName="projects/qwiklabs-gcp-02-3d9077abaaf1/logs/cloudaudit.googleapis.com%2Fdata_access" AND resource.type="bigquery_dataset" AND resource.labels.dataset_id="customer_data"' --limit=3 --freshness=1d --format="table(timestamp, protoPayload.authenticationInfo.principalSubject)"
+Output:
+TIMESTAMP                    PRINCIPAL_SUBJECT
+2026-09-26T11:41:47.818009Z  principal://agents.global.org-616463121992.system.id.goog/resources/aiplatform/projects/283235220070/locations/us-east1/reasoningEngines/3356507733414117376
+Result: PASS
+
+--- CHECK 6: Access Enforcement & Denial ---
+Command: gcloud logging read 'protoPayload.status.code=7' --limit=3 --freshness=1d --format="table(timestamp, protoPayload.authenticationInfo.principalEmail, protoPayload.status.message)"
+Output:
+TIMESTAMP                    PRINCIPAL_EMAIL                                                      MESSAGE
+2026-09-26T11:42:16.036896Z  promo-agent-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com  Access Denied: Project qwiklabs-gcp-02-3d9077abaaf1: User does not have bigquery.jobs.create permission in project qwiklabs-gcp-02-3d9077abaaf1.
+Result: PASS
+
+=== VERIFICATION FINAL STATUS: PASS (100% COMPLIANT) ===

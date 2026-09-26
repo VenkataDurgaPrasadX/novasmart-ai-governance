@@ -1,0 +1,84 @@
+=== M3 STEP 3 MUTATION RECORD ===
+Execution Timestamp: 2026-09-26T11:52:32Z
+
+--- MUTATION 1: Service Account IAM Permissions ---
+Commands executed:
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-3d9077abaaf1 --member="serviceAccount:service-283235220070@gcp-sa-dep.iam.gserviceaccount.com" --role="roles/modelarmor.calloutUser"
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-3d9077abaaf1 --member="serviceAccount:service-283235220070@gcp-sa-dep.iam.gserviceaccount.com" --role="roles/modelarmor.user"
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-3d9077abaaf1 --member="serviceAccount:service-283235220070@gcp-sa-aiplatform-re.iam.gserviceaccount.com" --role="roles/modelarmor.calloutUser"
+gcloud projects add-iam-policy-binding qwiklabs-gcp-02-3d9077abaaf1 --member="serviceAccount:service-283235220070@gcp-sa-aiplatform-re.iam.gserviceaccount.com" --role="roles/modelarmor.user"
+
+--- MUTATION 2: Ingress Agent Gateway Import ---
+Command:
+gcloud beta network-services agent-gateways import novasmart-ingress-gateway --source=/tmp/ingress-gw.yaml --location=us-east1
+
+Result:
+Created agentGateway: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agentGateways/novasmart-ingress-gateway
+
+--- MUTATION 3: Authz Extension Import ---
+Command:
+gcloud service-extensions authz-extensions import nvst-ma-ext --source=/tmp/ma-ext.yaml --location=us-east1
+
+Result:
+Created authzExtension: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/authzExtensions/nvst-ma-ext
+
+--- MUTATION 4: Authz Policy Import ---
+Command:
+gcloud beta network-security authz-policies import nvst-ma-policy --source=/tmp/ma-pol-content.yaml --location=us-east1
+
+Result:
+Created authzPolicy: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/authzPolicies/nvst-ma-policy
+
+--- MUTATION 5: Reasoning Engine Gateway Attachment ---
+Command:
+curl -s -X PATCH -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d "{\"spec\":{\"deploymentSpec\":{\"agentGatewayConfig\":{\"clientToAgentConfig\":{\"agentGateway\":\"projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agentGateways/novasmart-ingress-gateway\"}}}}}" \
+  "https://us-east1-aiplatform.googleapis.com/v1beta1/projects/283235220070/locations/us-east1/reasoningEngines/2003176045389283328?updateMask=spec.deploymentSpec.agentGatewayConfig"
+
+Re-read Live Configuration Verification:
+{
+  "clientToAgentConfig": {
+    "agentGateway": "projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agentGateways/novasmart-ingress-gateway"
+  }
+}
+
+=== CHANGE RECORD ===
+Change: Service Account IAM Policy Bindings
+Resource: projects/qwiklabs-gcp-02-3d9077abaaf1
+When: 2026-09-26T11:51:00Z
+Undo:
+gcloud projects remove-iam-policy-binding qwiklabs-gcp-02-3d9077abaaf1 --member="serviceAccount:service-283235220070@gcp-sa-dep.iam.gserviceaccount.com" --role="roles/modelarmor.calloutUser"
+
+Change: Ingress Agent Gateway Creation
+Resource: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agentGateways/novasmart-ingress-gateway
+When: 2026-09-26T11:51:47Z
+Undo:
+gcloud beta network-services agent-gateways delete novasmart-ingress-gateway --location=us-east1 --quiet
+
+Change: Model Armor AuthzExtension Creation
+Resource: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/authzExtensions/nvst-ma-ext
+When: 2026-09-26T11:51:34Z
+Undo:
+gcloud service-extensions authz-extensions delete nvst-ma-ext --location=us-east1 --quiet
+
+Change: Content Security AuthzPolicy Creation
+Resource: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/authzPolicies/nvst-ma-policy
+When: 2026-09-26T11:52:18Z
+Undo:
+gcloud beta network-security authz-policies delete nvst-ma-policy --location=us-east1 --quiet
+
+Change: Price Match Agent Gateway Attachment
+Resource: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/reasoningEngines/2003176045389283328
+When: 2026-09-26T11:52:32Z
+Undo:
+curl -X PATCH -H "Authorization: Bearer \$(gcloud auth print-access-token)" -H "Content-Type: application/json" "https://us-east1-aiplatform.googleapis.com/v1beta1/projects/283235220070/locations/us-east1/reasoningEngines/2003176045389283328?updateMask=spec.deploymentSpec.agentGatewayConfig" -d '{"spec":{"deploymentSpec":{}}}'
+
+=== VERIFICATION CHECKLIST ===
+| Check Name | Result |
+| :--- | :--- |
+| Service Agent Roles | PASS (CalloutUser and ModelArmorUser verified) |
+| Ingress Gateway Provisioning | PASS (novasmart-ingress-gateway created in us-east1) |
+| AuthzExtension & Policy Provisioning | PASS (nvst-ma-ext & nvst-ma-policy bound) |
+| PMA Reasoning Engine Attachment | PASS (agentGatewayConfig live and confirmed via GET) |
+
+Coverage: 4 of 4 checks evidenced.

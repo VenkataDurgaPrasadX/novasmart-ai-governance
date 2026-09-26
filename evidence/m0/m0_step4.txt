@@ -1,0 +1,39 @@
+=== COMMANDS ===
+# Trigger requests sent to Store Portal /api/chat endpoint
+PORTAL=$(gcloud run services describe novasmart-store-portal --region=us-east1 --format='value(status.url)')
+MARK=2026-09-26T11:18:23Z
+curl -sS -X POST "$PORTAL/api/chat" -H 'Content-Type: application/json' -d '{"prompt":"Run the promotional campaign extract for our VIP customers.","target":"promo"}' -w '\nHTTP %{http_code}\n'
+curl -sS -X POST "$PORTAL/api/chat" -H 'Content-Type: application/json' -d '{"prompt":"Apply loyalty rewards and verify membership tier perks for Customer ID CUST-1001.","target":"customer"}' -w '\nHTTP %{http_code}\n'
+
+# BigQuery Data-Access Audit Log Query
+gcloud logging read 'logName="projects/qwiklabs-gcp-02-3d9077abaaf1/logs/cloudaudit.googleapis.com%2Fdata_access" AND resource.type="bigquery_dataset" AND resource.labels.dataset_id="customer_data" AND protoPayload.metadata.tableDataRead:*' --limit=20 --freshness=1d --format=json
+
+# Dataset ACL Query
+bq show --format=prettyjson customer_data
+
+# Workload Service Account Verification
+gcloud run services describe promo-agent-shadow --region=us-east1 --format="value(spec.template.spec.serviceAccountName)"
+gcloud agent-registry agents describe projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agents/agentregistry-00000000-0000-0000-d067-ef4ff4efa1ad --format="value(attributes)"
+
+=== OUTPUTS ===
+[Trigger Provenance]
+MARK=2026-09-26T11:18:23Z
+Target: promo -> HTTP 200
+Target: customer -> HTTP 200
+
+[Audit Log Result (tableDataRead)]
+Timestamp: 2026-09-26T11:18:22.283466Z
+PrincipalEmail: novasmart-customer-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com
+ResourceName: projects/qwiklabs-gcp-02-3d9077abaaf1/datasets/customer_data/tables/customers
+FieldsRead: ["customer_id", "email", "lifetime_value", "loyalty_tier", "name"]
+
+[Dataset ACL (customer_data)]
+- specialGroup: projectWriters (WRITER)
+- specialGroup: projectOwners (OWNER)
+- specialGroup: projectReaders (READER)
+- userByEmail: qwiklabs-gcp-02-3d9077abaaf1@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com (OWNER)
+- userByEmail: antigravity-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com (roles/bigquery.securityAdmin)
+
+[Workload Identities]
+promo-agent-shadow -> novasmart-customer-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com
+customer-personalization-agent -> sa://novasmart-customer-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com

@@ -1,0 +1,36 @@
+=== COMMANDS & TRIGGERS ===
+# 1. Trigger legitimate Personalization Agent read via A2A stream
+ENGINE="projects/283235220070/locations/us-east1/reasoningEngines/3356507733414117376"
+curl -sS -N -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" -X POST \
+  "https://us-east1-aiplatform.googleapis.com/v1beta1/${ENGINE}/a2a/v1/message:stream" \
+  -d '{"request":{"messageId":"m1-1790422892","role":"ROLE_USER","content":[{"text":"What is customer 1001 loyalty tier?"}]}}'
+
+# 2. Trigger Promo Agent attempt
+PROMO_URL=$(gcloud run services describe promo-agent-shadow --region=us-east1 --format='value(status.url)')
+curl -i -X POST "$PROMO_URL/run-campaign" -H "Content-Type: application/json" -d '{"campaign_name": "Fall Loyalty Promo"}'
+
+# 3. Query BigQuery Data Access Audit Log
+gcloud logging read '
+  logName="projects/qwiklabs-gcp-02-3d9077abaaf1/logs/cloudaudit.googleapis.com%2Fdata_access"
+  AND resource.type="bigquery_dataset"
+  AND resource.labels.dataset_id="customer_data"
+' --limit=5 --freshness=15m --format="table(timestamp, protoPayload.authenticationInfo.principalSubject, protoPayload.methodName)"
+
+# 4. Query Audit Log Denials (PERMISSION_DENIED)
+gcloud logging read 'protoPayload.status.code=7' --limit=5 --freshness=15m
+
+=== OUTPUTS ===
+[A2A Trigger Output]
+Customer 1001 (ID: CUST-1001, Elena Rostova) has a Platinum loyalty tier. (Lifetime Value: $14,500)
+
+[Promo Agent Trigger Output]
+{"agent_name":"Promotional Marketing Agent (Google ADK on Cloud Run)","campaign_status":"launched","records_analyzed":0,"sample_targets":[]}
+
+[Audit Log Verification - Successful Read]
+TIMESTAMP                    PRINCIPAL_SUBJECT                                                                                                                                             METHOD_NAME
+2026-09-26T11:41:47.818009Z  principal://agents.global.org-616463121992.system.id.goog/resources/aiplatform/projects/283235220070/locations/us-east1/reasoningEngines/3356507733414117376  google.cloud.bigquery.v2.JobService.InsertJob
+
+[Audit Log Verification - Refusal / Denial]
+TIMESTAMP                    PRINCIPAL_EMAIL                                                      STATUS_MESSAGE                                                                                                                   RESOURCE_NAME
+2026-09-26T11:42:16.036896Z  promo-agent-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com  Access Denied: Project qwiklabs-gcp-02-3d9077abaaf1: User does not have bigquery.jobs.create permission in project ...          projects/qwiklabs-gcp-02-3d9077abaaf1/jobs/e9ea9cac-9473-4843-b435-4bd7e1575734

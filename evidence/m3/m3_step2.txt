@@ -1,0 +1,59 @@
+=== M3 STEP 2 DISCOVERY RESULTS (READ-ONLY AUDIT) ===
+Execution Timestamp: 2026-09-26T11:49:45Z
+
+--- COMMAND 1: Agent Gateway Attachment Status ---
+Command:
+curl -s -H "Authorization: Bearer $TOKEN" "https://us-east1-aiplatform.googleapis.com/v1beta1/projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/reasoningEngines/2003176045389283328" | jq '.spec.deploymentSpec.agentGatewayConfig // "ABSENT (None)"'
+
+Output:
+Price Match Agent (2003176045389283328): ABSENT (None)
+Customer Personalization Agent (3356507733414117376): ABSENT (None)
+Markdown Strategy Agent (352606781957996544): ABSENT (None)
+
+--- COMMAND 2: Model Armor Template Inspection ---
+Command:
+gcloud config set api_endpoint_overrides/modelarmor "https://modelarmor.us-east1.rep.googleapis.com/"
+gcloud model-armor templates list --location=us-east1 --format="yaml(name, filterConfig)"
+
+Output:
+filterConfig:
+  maliciousUriFilterSettings:
+    filterEnforcement: ENABLED
+  piAndJailbreakFilterSettings:
+    confidenceLevel: MEDIUM_AND_ABOVE
+    filterEnforcement: ENABLED
+  raiSettings:
+    raiFilters:
+    - confidenceLevel: MEDIUM_AND_ABOVE
+      filterType: HATE_SPEECH
+    - confidenceLevel: MEDIUM_AND_ABOVE
+      filterType: HARASSMENT
+    - confidenceLevel: MEDIUM_AND_ABOVE
+      filterType: SEXUALLY_EXPLICIT
+name: projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/templates/nvst-jailbreak-template
+
+--- COMMAND 3: Network Services Infrastructure Inspection ---
+Command:
+curl -s -H "Authorization: Bearer $TOKEN" "https://networkservices.googleapis.com/v1/projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agentGateways"
+curl -s -H "Authorization: Bearer $TOKEN" "https://networkservices.googleapis.com/v1/projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/authzExtensions"
+curl -s -H "Authorization: Bearer $TOKEN" "https://networksecurity.googleapis.com/v1/projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/authzPolicies"
+
+Output:
+agentGateways: {}
+authzExtensions: {}
+authzPolicies: {}
+
+=== CHANGE RECORD ===
+What changed: None (Read-only discovery turn)
+On which resource: N/A
+When in UTC: 2026-09-26T11:49:45Z
+Undo command: N/A
+
+=== VERIFICATION CHECKLIST ===
+| Check Name | Result |
+| :--- | :--- |
+| Agent Gateway Config on Engines | PASS (Confirmed absent across all 3 engines) |
+| Model Armor Template Audit | PASS (Confirmed nvst-jailbreak-template exists in us-east1) |
+| Network Services Infrastructure Audit | PASS (Confirmed 0 gateways/extensions/policies provisioned) |
+
+Coverage: 3 of 3 checks evidenced.

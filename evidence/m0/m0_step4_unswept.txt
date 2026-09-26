@@ -1,0 +1,14 @@
+=== COMMANDS ===
+gcloud compute instances list --project qwiklabs-gcp-02-3d9077abaaf1 --format="table(name,zone,status)"
+gcloud container clusters list --project qwiklabs-gcp-02-3d9077abaaf1 --format="table(name,location,status)"
+gcloud functions list --project qwiklabs-gcp-02-3d9077abaaf1 --format="table(name,region,status)"
+
+=== OUTPUTS ===
+[Compute Engine Instances]
+NAME: ag-vm-vm1 | ZONE: europe-west3-b | STATUS: RUNNING
+
+[GKE Clusters Query]
+ERROR: 403 Permission denied on container.clusters.list for project qwiklabs-gcp-02-3d9077abaaf1
+
+[Cloud Functions Query]
+ERROR: 403 Permission denied on cloudfunctions.locations.list for project qwiklabs-gcp-02-3d9077abaaf1

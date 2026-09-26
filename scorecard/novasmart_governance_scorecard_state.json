@@ -1,0 +1,104 @@
+{
+  "missions": {
+    "M1": {
+      "status": "PASS",
+      "timestamp": "2026-09-26 11:44 UTC",
+      "tagline": "\ud83c\udfc6 Achievement Unlocked: Eliminator of Shared Credentials \u2014 You split the shared login, gave each workload its own identity, and cut its access back to what the job needs.",
+      "checks": [
+        {
+          "name": "Shadow Agent Registration",
+          "proof": "projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/services/promo-agent-shadow",
+          "result": "PASS"
+        },
+        {
+          "name": "Dedicated Service Account",
+          "proof": "promo-agent-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com",
+          "result": "PASS"
+        },
+        {
+          "name": "Agent Identity Splitting",
+          "proof": "principal://agents.global.org-616463121992...",
+          "result": "PASS"
+        },
+        {
+          "name": "Least-Privilege Dataset Access",
+          "proof": "roles/bigquery.admin removed; dataset READER granted",
+          "result": "PASS"
+        },
+        {
+          "name": "Audit Log Attribution",
+          "proof": "tableDataRead attributed to principalSubject",
+          "result": "PASS"
+        },
+        {
+          "name": "Access Enforcement & Denial",
+          "proof": "status.code=7 PERMISSION_DENIED on promo-agent-sa",
+          "result": "PASS"
+        }
+      ]
+    },
+    "M3": {
+      "status": "PASS",
+      "timestamp": "2026-09-26 11:56 UTC",
+      "tagline": "\ud83c\udfc6 Achievement Unlocked: Guardian of the Inference Boundary \u2014 You put content screening in front of the Price Match Agent and watched it refuse a jailbreak that used to get through.",
+      "checks": [
+        {
+          "name": "Model Armor Gateway Attachment",
+          "proof": "novasmart-ingress-gateway attached to Price Match Agent clientToAgentConfig"
+        },
+        {
+          "name": "Service Agent Callout IAM",
+          "proof": "gcp-sa-dep and gcp-sa-aiplatform-re hold roles/modelarmor.calloutUser, user, consumer"
+        },
+        {
+          "name": "Adversarial Prompt Screening",
+          "proof": "Attack A blocked: HTTP 403 \u00b7 Model Armor: Prompt violates content security configurations"
+        },
+        {
+          "name": "Legitimate Request Throughput",
+          "proof": "Normal price match requests pass through gateway with 200 OK"
+        },
+        {
+          "name": "Estate Coverage Scope Boundary",
+          "proof": "Price Match Agent covered via streamQuery; CPA and MSA A2A streaming paths documented"
+        },
+        {
+          "name": "Template & Policy Integrity",
+          "proof": "nvst-jailbreak-template intact; nvst-ma-policy active; zero antigravity-sa self grants"
+        }
+      ]
+    },
+    "M4": {
+      "status": "PASS",
+      "timestamp": "2026-09-26 12:00 UTC",
+      "tagline": "\ud83c\udfc6 Achievement Unlocked: Master of Agent Observability \u2014 You instrumented distributed OpenTelemetry tracing and full prompt/response logging across multi-agent trajectories.",
+      "checks": [
+        {
+          "name": "Agent Telemetry Audit",
+          "proof": "PMA, CPA, and MSA runtime telemetry verified active (GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true)"
+        },
+        {
+          "name": "Payload Content Capture",
+          "proof": "SPAN_AND_EVENT in CAPITAL LETTERS verified active on Markdown Strategy Agent"
+        },
+        {
+          "name": "GenAI Semantic Conventions",
+          "proof": "gen_ai_latest_experimental verified active across all agents"
+        },
+        {
+          "name": "Distributed Multi-Agent Trace",
+          "proof": "PMA -> MSA span hierarchy correlated in Cloud Trace"
+        },
+        {
+          "name": "MCP Tool Execution Visibility",
+          "proof": "BigQuery tool execution JSON captured in trace spans"
+        },
+        {
+          "name": "Change Records & Zero Self-Grants",
+          "proof": "Change records saved; antigravity-sa roles unchanged"
+        }
+      ]
+    }
+  },
+  "last_updated": "2026-09-26 12:00 UTC"
+}

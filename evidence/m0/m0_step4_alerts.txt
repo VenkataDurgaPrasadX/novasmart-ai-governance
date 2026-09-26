@@ -1,0 +1,16 @@
+=== COMMANDS ===
+gcloud alpha monitoring policies list --project qwiklabs-gcp-02-3d9077abaaf1 --format="table(name,displayName,enabled)"
+gcloud alpha monitoring channels list --project qwiklabs-gcp-02-3d9077abaaf1 --format="table(name,displayName,type)"
+gcloud logging sinks list --project qwiklabs-gcp-02-3d9077abaaf1 --format="table(name,destination,filter)"
+
+=== OUTPUTS ===
+[Cloud Monitoring Alert Policies]
+Total policies found: 0
+
+[Cloud Monitoring Notification Channels]
+Total notification channels found: 0
+
+[Cloud Logging Sinks]
+- _Required (default Audit Log bucket)
+- _Default (default Application Log bucket)
+No custom alert sinks or notification triggers configured for uncatalogued deployments.

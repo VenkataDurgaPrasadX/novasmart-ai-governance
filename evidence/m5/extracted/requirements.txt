@@ -1,0 +1,11 @@
+google-adk[agent-identity]>=1.18.0,<2.0.0
+a2a-sdk==0.3.26
+nest-asyncio>=1.6.0
+mcp==1.27.2
+google-cloud-aiplatform>=1.126.1
+urllib3<2.0.0
+opentelemetry-api>=1.29.0
+opentelemetry-sdk>=1.29.0
+opentelemetry-exporter-otlp>=1.29.0
+opentelemetry-instrumentation-google-genai
+opentelemetry-instrumentation-vertexai

@@ -1,0 +1,15 @@
+=== COMMANDS ===
+gcloud projects get-iam-policy qwiklabs-gcp-02-3d9077abaaf1 --flatten="bindings[].members" --format="table(bindings.role,bindings.members)" | grep novasmart-customer-sa
+
+=== OUTPUTS ===
+[Project-Level IAM Roles for novasmart-customer-sa]
+- roles/bigquery.admin (PROJECT LEVEL - Full admin access across all datasets in project)
+- roles/aiplatform.user
+- roles/logging.logWriter
+- roles/run.invoker
+- roles/storage.objectViewer
+- roles/telemetry.writer
+
+[Shared Workloads]
+- promo-agent-shadow (Cloud Run service)
+- customer-personalization-agent (Managed reasoning engine)

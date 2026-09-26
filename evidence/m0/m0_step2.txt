@@ -1,0 +1,15 @@
+=== COMMANDS ===
+gcloud agent-registry agents list --location=us-east1 --format="table(displayName,location,name)"
+gcloud agent-registry agents list --location=global --format="table(displayName,location,name)"
+
+=== OUTPUTS ===
+[Command: gcloud agent-registry agents list --location=us-east1 (excluding default agents)]
+DISPLAY_NAME                    LOCATION  NAME
+Price Match Agent               us-east1  projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agents/agentregistry-00000000-0000-0000-dac5-f988b64eeea1
+customer-personalization-agent  us-east1  projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agents/agentregistry-00000000-0000-0000-d067-ef4ff4efa1ad
+markdown-strategy-agent         us-east1  projects/qwiklabs-gcp-02-3d9077abaaf1/locations/us-east1/agents/agentregistry-00000000-0000-0000-e2d6-6fa1ffdfde58
+
+[Excluded default built-in platform agents]
+Workspace Agent (global)
+Gemini Enterprise Core Assistant (global)
+Deep Research (global)

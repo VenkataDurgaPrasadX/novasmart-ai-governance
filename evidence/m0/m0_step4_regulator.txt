@@ -1,0 +1,11 @@
+=== COMMANDS ===
+gcloud logging read 'logName="projects/qwiklabs-gcp-02-3d9077abaaf1/logs/cloudaudit.googleapis.com%2Fdata_access" AND resource.type="bigquery_dataset" AND resource.labels.dataset_id="customer_data" AND protoPayload.metadata.tableDataRead:*' --limit=20 --freshness=1d --format=json
+
+=== OUTPUTS ===
+[Audit Log Record - Last 24 Hours]
+Timestamp: 2026-09-26T11:18:22.283466Z
+PrincipalEmail: novasmart-customer-sa@qwiklabs-gcp-02-3d9077abaaf1.iam.gserviceaccount.com
+ResourceName: projects/qwiklabs-gcp-02-3d9077abaaf1/datasets/customer_data/tables/customers
+FieldsRead: ["customer_id", "email", "lifetime_value", "loyalty_tier", "name"]
+Individual Row Key / Customer ID: NOT RECORDED IN AUDIT LOG
+Specific Acting Workload: NOT RECORDED IN AUDIT LOG (Shared Login)
